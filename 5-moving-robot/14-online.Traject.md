@@ -9,7 +9,7 @@
      global onl_trj
      var desired_pose 
 
-     onl_trj=online.Track()
+     onl_trj=online.Traject()
      onl_trj.time_from_start=-1.0
      onl_trj.look_ahead_time=1.0
      onl_trj.interval=0.1
@@ -42,7 +42,7 @@
      ret=enet0.accept()
 
      global onl_trj
-     onl_trj=online.Track()
+     onl_trj=online.Traject()
      onl_trj.time_from_start=-1.0
      onl_trj.look_ahead_time=1.0
      onl_trj.interval=0.1
