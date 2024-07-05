@@ -166,6 +166,12 @@ print response=="ng"
 
 Sometimes, the data type of an operand may change automatically during the process of operation.
 
+When a number is compared with a string with the comparison operator, it compares them as strings.
+
+```python
+print 123=="123" # true
+```
+
 When a number is used as an operand of a logical operator, the result will be regarded as false if it is 0 and true if it is not.
 
 ```python
