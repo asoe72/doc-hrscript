@@ -2,7 +2,7 @@
 
 ```python
      import http_cli
-     var cli=http_cli.HttpClient()
+     var cli=http_cli.HttpCli()
      var url, body, query, status_code
      var domain="http://192.168.1.200:8888"
 
