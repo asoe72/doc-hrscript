@@ -1,8 +1,8 @@
 # 6.2.4 Examples of HTTP Client Communication
 
 ```python
-import http_client
-var cli=http_client.HttpClient()
+import http_cli
+var cli=http_cli.HttpCli()
 
 var domain="http://192.168.1.200:8888"
 
