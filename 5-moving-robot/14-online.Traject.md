@@ -15,7 +15,7 @@
      onl_trj.look_ahead_time=1.0
      onl_trj.interval=0.1
      onl_trj.init
-     onl_trj.exe desired_pose
+     onl_trj.buf_in desired_pose
  
 ```
 
@@ -24,7 +24,7 @@
 * look_ahead_time : 지령 출력을 위한 지연시간 (단위 [s])
 * interval : 지령 사이의 시간 (단위 [s])
 * init : 온라인 지령상태 초기화 
-* exe <포즈데이터> : <포즈> 데이터는 로봇의 축 각도로 설정  
+* buf_in <포즈데이터> or <문자열데이터>: <포즈> 데이터와 문자열 데이터 로봇의 축 각도로 설정 (ex. [0.000,90.000,0.000,0.000,-90.000,0.000])  
 
 
 
@@ -50,12 +50,10 @@
      onl_trj.interval=0.1
      onl_trj.init
 
-     var desired_pose
-     var msg
+     var str_pose
 10   enet0.recv
-     msg=result()
-     desired_pose=Pose(msg)
-     onl_trj.exe desired_pose
+     str_pose=result()
+     onl_trj.buf_in str_pose
      goto 10
      end 
 ```
