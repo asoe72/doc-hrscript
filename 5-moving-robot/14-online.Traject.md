@@ -14,7 +14,7 @@
      onl_trj.look_ahead_time=1.0
      onl_trj.interval=0.1
      onl_trj.init
-     onl_trj.exe desired_pose
+     onl_trj.buf_in desired_pose
  
 ```
 
@@ -23,7 +23,7 @@
 * look_head_time : time delay for robot moving (unit : [s])  
 * interval : time interval between commands (unit : [s])  
 * init : online trajectory operation init  
-* exe  : user should set the pose data in joint space coordinate  
+* buf_in  : user should set the pose data or string data (ex. [0.000,90.000,0.000,0.000,-90.000,0.000]) in joint space coordinate
 
 
 
@@ -48,11 +48,10 @@
      onl_trj.interval=0.1
      onl_trj.init
 
-     var desired_pose
-     var msg
-10   enet0.recv msg
-     desired_pose=Pose(msg)
-     onl_trj.exe desired_pose
+     var str_pose
+10   enet0.recv
+     str_pose=result()
+     onl_trj.buf_in str_pose
      goto 10
      end 
 ```
