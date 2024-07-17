@@ -13,9 +13,8 @@ If you copy or overwrite .job files into the jobs/ folder with FTP or copyfile c
 - If the file has different modified time, it is loaded.
 - Files that do not exist in memory are loaded.
 
-- Since large capacity .jobs can be loaded, it is performed asynchronously in the background to avoid loss of tact time due to load. The successful completion of the load can be determined by reading the values of the resulting variables.
-- You cannot request another load until the load is finished.
-
+- Since large capacity .jobs can be loaded, it is performed asynchronously in the background to avoid loss of tact time due to load. The successful completion of the load can be determined by reading the value of the resulting-variable.
+- You cannot request another loading until current loading is finished.
 
 
 ### Syntax

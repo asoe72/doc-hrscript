@@ -139,6 +139,8 @@
       * [9.1.3 delfile](9-file/1-file-system/3-delfile.md)
   * [9.2 Load/Save](9-file/2-load-save/README.md)
       * [9.1.1 load_job](9-file/2-load-save/1-load_job.md)
+      * [9.1.2 load_csv](9-file/2-load-save/2-load_csv.md)
+      * [9.1.3 save_csv](9-file/2-load-save/3-save_csv.md)
 * [10. Etc.](10-etc/README.md)
   * [10.1 Etc. procedures](10-etc/1-proc/README.md)
     * [10.1.1 gather](10-etc/1-proc/1-gather.md)

@@ -448,6 +448,12 @@ print response=="ng"
 
 Sometimes, the data type of an operand may change automatically during the process of operation.
 
+When a number is compared with a string with the comparison operator, it compares them as strings.
+
+```python
+print 123=="123" # true
+```
+
 When a number is used as an operand of a logical operator, the result will be regarded as false if it is 0 and true if it is not.
 
 ```python
@@ -3527,28 +3533,31 @@ S2   move P,spd=250mm/sec,accu=0,tool=0
 * For using the function of softjoint, parameters on "j" and "sft" on softjoint_lim should be set. Also, if you do not set "ang" parameter, robot moves in workspace on defined softlimit. And, default parameter value on torque threshold "thr" is 0 [Nm]. 
 
 {% endhint %}
-# 5.14 online.Track
+# 5.14 online.Traject
 
 
 ### Description  
-* As position increments are input to Ethernet through UDP communication, robot move toward the command. 
+* As position are input to Ethernet through UDP or TCP communication, robot move toward the command. 
 
 ### Syntax 
 ```python
-     global onl_track
+     global onl_trj
      var desired_pose 
 
-     onl_track=online.Track()
-     onl_track.time_from_start=-1.0
-     onl_track.look_ahead_time=1.0
-     onl_track.exe_interval=0.1
-     onl_track.init
-     onl_track.exe desired_pose
+     onl_trj=online.Traject()
+     onl_trj.time_from_start=-1.0
+     onl_trj.look_ahead_time=1.0
+     onl_trj.interval=0.1
+     onl_trj.init
+     onl_trj.exe desired_pose
  
 ```
 
 ### Parameter 
-* init : initial setting  
+* time_from_start : elapsed time from start position (-1: disable)  
+* look_head_time : time delay for robot moving (unit : [s])  
+* interval : time interval between commands (unit : [s])  
+* init : online trajectory operation init  
 * exe  : user should set the pose data in joint space coordinate  
 
 
@@ -3559,24 +3568,26 @@ S2   move P,spd=250mm/sec,accu=0,tool=0
 ```python
      import enet
      global enet0
-     global onl_track
-     var desired_pose
-     var msg
-     enet0=enet.ENet("udp")
-     enet0.ip_addr="192.168.0.7"
+     enet0=enet.ENet("tcp")
+     enet0.ip_addr="192.168.1.213"
      enet0.lport=7000
      enet0.rport=7000
-     enet0.open
-     
-     onl_track=online.Track()
-     onl_track.time_from_start=-1.0
-     onl_track.look_ahead_time=1.0
-     onl_track.exe_interval=0.1
-     onl_track.init
+     var ret=enet0.open()
+     ret=enet0.listen()
+     ret=enet0.accept()
 
+     global onl_trj
+     onl_trj=online.Traject()
+     onl_trj.time_from_start=-1.0
+     onl_trj.look_ahead_time=1.0
+     onl_trj.interval=0.1
+     onl_trj.init
+
+     var desired_pose
+     var msg
 10   enet0.recv msg
      desired_pose=Pose(msg)
-     onl_track.exe desired_pose
+     onl_trj.exe desired_pose
      goto 10
      end 
 ```
@@ -3585,7 +3596,7 @@ S2   move P,spd=250mm/sec,accu=0,tool=0
 --- 
 {% hint style="info" %}
 
-* The role of robot language "online" is that robot move toward desired joint angle command from "enet" through UDP communication.   
+* The role of robot language "online.Traject()" is that robot move toward desired joint angle command from "enet" through communication.   
 
 {% endhint %}
 # 5.15 convcrd
@@ -4102,8 +4113,8 @@ cli.delete domain+"/items/3"
 # 6.2.4 Examples of HTTP Client Communication
 
 ```python
-import http_client
-var cli=http_client.HttpClient()
+import http_cli
+var cli=http_cli.HttpCli()
 
 var domain="http://192.168.1.200:8888"
 
@@ -5992,9 +6003,8 @@ If you copy or overwrite .job files into the jobs/ folder with FTP or copyfile c
 - If the file has different modified time, it is loaded.
 - Files that do not exist in memory are loaded.
 
-- Since large capacity .jobs can be loaded, it is performed asynchronously in the background to avoid loss of tact time due to load. The successful completion of the load can be determined by reading the values of the resulting variables.
-- You cannot request another load until the load is finished.
-
+- Since large capacity .jobs can be loaded, it is performed asynchronously in the background to avoid loss of tact time due to load. The successful completion of the load can be determined by reading the value of the resulting-variable.
+- You cannot request another loading until current loading is finished.
 
 
 ### Syntax
@@ -6049,6 +6059,168 @@ load_job <result-variable>,"*"
      end
      *timeout
      print "copyfile failed"
+     end
+```
+# 9.2.2 load_csv
+
+Supported from V60.28-00.
+
+Statement that reads to memory the changes to the .csv file (root global array) in the `project/vars/` folder of the MAIN module.
+
+### Description
+
+The global root arrays of HRScript is stored in the `vars/` folder as files in CSV standard format. ('Root' means that it is not a property of another array or object.)
+
+For information on variable files, please refer to the operation manual link below.
+
+[global variable/variable file](https://hrbook-hrc.web.app/#/view/doc-hi6-operation/english-tp630/6-monitoring/3-job/3-global-variable/3-var-files)
+
+You can easily edit .csv files with a text editor on your PC.
+The edited file copied to the `vars/` folder is not immediately reflected in memory, but only by using the `[load all]` function in the TeachPendant's global variable window or executing the `load_csv` statement.
+
+- Because large .csv's can be loaded, they are performed asynchronously in the background to avoid loss of tact time due to loading. The successful loading can be determined by reading the value of the result-variable.
+- You cannot request another loading until current loading is finished.
+
+
+### Syntax
+
+```python
+load_csv <result-variable>,"*"
+load_csv <result-variable>,"<variable name>"
+```
+
+### Parameters
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align:left">Parameter</th>
+      <th style="text-align:left">Description</th>
+      <th style="text-align:left">Remarks</th>
+    </tr>
+  </thead>
+  <tbody>
+  <tr>
+      <td style="text-align:left">result-variable</td>
+      <td style="text-align:left">
+        result of background execution<br>
+        <ul>
+        <li>1: Completed.</li>
+        <li>0: Load in progress.</li>
+        </ul>
+      </td>
+      <td style="text-align:left">variable</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">.csv file title</td>
+      <td style="text-align:left">
+        <ul>
+        <li>"*": loads all files.</li>
+        <li>"&lt;variable name&gt;": Loads &lt;variable name&gt;.csv file.</li>
+        </ul>
+      </td>
+      <td style="text-align:left">string expression</td>
+    </tr>
+  </tbody>
+</table>
+
+{% hint style="warning" %}
+If you load all .csv with "*", the root arrays in memory that does not have .csv in the `vars/` folder are deleted.
+{% endhint %}
+
+### Sample
+
+```python
+     var res
+     copyfile res,"work/arrs/locs1.csv","project/vars/locs.csv"
+     wait res==1,4,*timeout
+     load_csv res,"locs"
+     wait res==1,4,*timeout
+     call 5
+     end
+     *timeout
+     print "failed to load new locations."
+     end
+```
+# 9.2.3 save_csv
+
+Supported from V60.28-00.
+
+Statement that stores the global root array variable in memory as a .csv file in the `project/vars/` folder of the MAIN module.
+
+### Description
+
+The global root array of HRScript is stored in the `vars/` folder as a file in CSV standard format. ('Root' means that it is not a property of another array or object.)
+
+For information on variable files, please refer to the operation manual link below.
+
+[global variable/variable file](https://hrbook-hrc.web.app/#/view/doc-hi6-operation/english-tp630/6-monitoring/3-job/3-global-variable/3-var-files)
+
+The global root arrays are not immediately stored to the .csv file whenever the value changes.
+It is saved as a file when you press `Ctrl+[F7: save]` or power off, and you can save it as a file immediately by executing the `save_csv` command.
+
+- Because large .csv's can be saved, they are performed asynchronously in the background to avoid loss of tact time due to saving. The successful saving can be determined by reading the value of the result-variable.
+- You cannot request another saving until current saving is finished.
+
+
+### Syntax
+
+```python
+save_csv <result-variable>,"*"
+save_csv <result-variable>,"<variable name>"
+```
+
+### Parameters
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align:left">Parameter</th>
+      <th style="text-align:left">Description</th>
+      <th style="text-align:left">Remarks</th>
+    </tr>
+  </thead>
+  <tbody>
+  <tr>
+      <td style="text-align:left">result-variable</td>
+      <td style="text-align:left">
+        result of background execution<br>
+        <ul>
+        <li>1: Completed.</li>
+        <li>0: Save in progress.</li>
+        </ul>
+      </td>
+      <td style="text-align:left">variable</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">.csv file title</td>
+      <td style="text-align:left">
+        <ul>
+        <li>"*": saves all variable.</li>
+        <li>"&lt;variable name&gt;": Saves &lt;variable name&gt;.csv file.</li>
+        </ul>
+      </td>
+      <td style="text-align:left">string expression</td>
+    </tr>
+  </tbody>
+</table>
+
+{% hint style="warning" %}
+If you save all .csv by specifying "*", it does not delete the .csv files in the `vars/` folder because the root variable of the corresponding name does not exist.
+{% endhint %}
+
+### Sample
+
+```python
+     var res
+     save_csv res,"locs"
+     wait res==1,4,*timeout
+     copyfile res,"project/vars/locs.csv","work/arrs/locs2.csv"
+     wait res==1,4,*timeout
+     call 5
+     end
+     *timeout
+     print "failed to save new locations."
      end
 ```
 # 10. Etc.
