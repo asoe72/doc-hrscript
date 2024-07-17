@@ -480,6 +480,12 @@ print response=="ng"
 
 간혹, 연산과정에서 피연산자의 자료형이 자동으로 바뀌는 경우도 있습니다.
 
+비교연산자로 숫자와 문자열을 비교하면, 문자열로 통일하여 비교합니다.
+
+```python
+print 123=="123" # true
+```
+
 논리연산자의 피연산자로 수치를 사용할 경우, 수치가 0이면 false, 0이 아니면 true로 간주합니다.
 
 ```python
@@ -1972,7 +1978,7 @@ dist2d 프로그램은 결과값을 return 문을 통해 외부로 전달하고 
 \(return문과 end문은 프로그램을 종료하고 주 프로그램으로 리턴한다는 점에서 동작이 같습니다. 다만 return문은 결과값을 인수로 지정할 수 있다는 점에서만 end문과 다릅니다.\)
 # 3.7.3 def문 (사용자함수 정의)
 
-V60.05-06부터
+V60.05-06부터 지원됩니다.
 
 ### 설명
 
@@ -3772,29 +3778,32 @@ S2   move P,spd=250mm/sec,accu=0,tool=0
 * softjoint_lim 파라미터는 축 번호와 부드러움 정도는 필수적으로 설정해야 하지만, 각도 범위와 문턱값은 설정을 하지 않으면 각도를 제한하지 않고 문턱값은 0.0[Nm]로 자동 설정 된다. 
 
 {% endhint %}
-# 5.14 online.Track
+# 5.14 online.Traject
 
 
 ## 설명 
-* UDP에 의해 이더넷으로 위치 증분이 입력될 때, 이를 반영하여 로봇을 제어 
+* UDP나 TCP 통신에 의해 이더넷으로 로봇의 위치데이터가 입력될 때, 이를 반영하여 로봇을 제어 
 
 
 ## 문법 
 ```python
-     global onl_track
+     global onl_trj
      var desired_pose 
 
-     onl_track=online.Track()
-     onl_track.time_from_start=-1.0
-     onl_track.look_ahead_time=1.0
-     onl_track.exe_interval=0.1
-     onl_track.init
-     onl_track.exe desired_pose
+     onl_trj=online.Traject()
+     onl_trj.time_from_start=-1.0
+     onl_trj.look_ahead_time=1.0
+     onl_trj.interval=0.1
+     onl_trj.init
+     onl_trj.exe desired_pose
  
 ```
 
 ## 파라미터 
-* init : 초기 설정값 확정 
+* time_from_start : 시작 지령으로 부터 경과된 시간 (-1= 미사용)
+* look_ahead_time : 지령 출력을 위한 지연시간 (단위 [s])
+* interval : 지령 사이의 시간 (단위 [s])
+* init : 온라인 지령상태 초기화 
 * exe <포즈데이터> : <포즈> 데이터는 로봇의 축 각도로 설정  
 
 
@@ -3805,24 +3814,28 @@ S2   move P,spd=250mm/sec,accu=0,tool=0
 ```python
      import enet
      global enet0
-     global onl_track
-     var desired_pose
-     var msg
-     enet0=enet.ENet("udp")
-     enet0.ip_addr="192.168.0.7"
+     enet0=enet.ENet("tcp")
+     enet0.ip_addr="192.168.1.213"
      enet0.lport=7000
      enet0.rport=7000
-     enet0.open
-     
-     onl_track=online.Track()
-     onl_track.time_from_start=-1.0
-     onl_track.look_ahead_time=1.0
-     onl_track.exe_interval=0.1
-     onl_track.init
+     enet0.open()
+     var ret=enet0.open()
+     ret=enet0.listen()
+     ret=enet0.accept()
 
-10   enet0.recv msg
+     global onl_trj
+     onl_trj=online.Traject()
+     onl_trj.time_from_start=-1.0
+     onl_trj.look_ahead_time=1.0
+     onl_trj.interval=0.1
+     onl_trj.init
+
+     var desired_pose
+     var msg
+10   enet0.recv
+     msg=result()
      desired_pose=Pose(msg)
-     onl_track.exe desired_pose
+     onl_trj.exe desired_pose
      goto 10
      end 
 ```
@@ -3831,7 +3844,7 @@ S2   move P,spd=250mm/sec,accu=0,tool=0
 --- 
 {% hint style="info" %}
 
-* online 명령어는 enet 명령어를 통해 외부로 부터 UDP 통신을 이용하여 전달 받은 외부 지령으로, 로봇을 움직이게 합니다.    
+* online.Traject 명령어는 enet 명령어를 통해 외부로 부터  통신을 이용하여 전달 받은 외부 지령으로, 로봇을 움직이게 합니다.    
 
 {% endhint %}
 # 5.15 convcrd 문
@@ -4931,7 +4944,7 @@ cli.delete domain+"/items"
 
 ```python
      import http_cli
-     var cli=http_cli.HttpClient()
+     var cli=http_cli.HttpCli()
      var url, body, query, status_code
      var domain="http://192.168.1.200:8888"
 
@@ -7107,6 +7120,168 @@ load_job <결과변수>,"*"
      end
      *timeout
      print "copyfile failed"
+     end
+```
+# 9.2.2 load_csv문
+
+V60.28-00부터 지원됩니다.
+
+MAIN 모듈의 project/vars/ 폴더의 .csv 파일(전역 최상위 배열)의 변경사항을 메모리로 읽어들이는 명령문입니다.
+
+### 설명
+
+HRScript의 전역 최상위(root) 배열은 vars/ 폴더에 CSV 표준형식의 파일로 저장됩니다. (최상위란 다른 배열이나 객체의 속성이 아닌 것을 의미합니다.)
+
+변수 파일에 대한 관련 내용은 아래 조작설명서 링크를 참고하십시오.
+
+[전역변수/변수 파일](https://hrbook-hrc.web.app/#/view/doc-hi6-operation/korean-tp630/6-monitoring/3-job/3-global-variable/3-var-files)
+
+.csv 파일들은 PC에서 텍스트 편집기로 쉽게 편집할 수 있습니다.
+편집된 파일을 vars/ 폴더로 복사하는 것 만으로는 즉각 메모리에 반영되지 않으며, 티치펜던트의 전역변수창에서 `[전부 불러오기]` 기능을 사용하거나, `load_csv` 명령을 실행해야만 반영됩니다.
+
+- 용량이 큰 .csv들이 로드될 수 있기 때문에, 로드에 의한 택트 타임 손실이 없도록 백그라운드에서 비동기적으로 수행됩니다. 로드가 성공적으로 완료 되었는지는 결과변수의 값을 읽어 확인 할 수 있습니다.
+- 로드가 끝나기 전에는 또 다른 로드를 요청할 수 없습니다.
+
+
+### 문법
+
+```python
+load_csv <결과변수>,"*"
+load_csv <결과변수>,"<변수명>"
+```
+
+### 파라미터
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align:left">항목</th>
+      <th style="text-align:left">의미</th>
+      <th style="text-align:left">기타</th>
+    </tr>
+  </thead>
+  <tbody>
+  <tr>
+      <td style="text-align:left">결과변수</td>
+      <td style="text-align:left">
+        백그라운드 수행 결과<br>
+        <ul>
+        <li>1: 완료됨.</li>
+        <li>0: 로드 진행 중.</li>
+        </ul>
+      </td>
+      <td style="text-align:left">변수</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">.csv 파일이름</td>
+      <td style="text-align:left">
+        <ul>
+        <li>"*": 모든 파일 로드.</li>
+        <li>"<변수명>": <변수명>.csv 파일을 로드.</li>
+        </ul>
+      </td>
+      <td style="text-align:left">문자열식</td>
+    </tr>
+  </tbody>
+</table>
+
+{% hint style="warning" %}
+"*"을 지정하여 모든 .csv를 로드하면, vars/ 폴더에 .csv가 존재하지 않는 메모리 내의 최상위 배열들은 삭제됩니다.
+{% endhint %}
+
+### 사용 예
+
+```python
+     var res
+     copyfile res,"work/arrs/locs1.csv","project/vars/locs.csv"
+     wait res==1,4,*timeout
+     load_csv res,"locs"
+     wait res==1,4,*timeout
+     call 5
+     end
+     *timeout
+     print "failed to load new locations."
+     end
+```
+# 9.2.3 save_csv문
+
+V60.28-00부터 지원됩니다.
+
+전역 최상위 배열 변수를 메모리에서 MAIN 모듈의 project/vars/ 폴더의 .csv 파일로 저장하는 명령문입니다.
+
+### 설명
+
+HRScript의 전역 최상위(root) 배열은 vars/ 폴더에 CSV 표준형식의 파일로 저장됩니다. (최상위란 다른 배열이나 객체의 속성이 아닌 것을 의미합니다.)
+
+변수 파일에 대한 관련 내용은 아래 조작설명서 링크를 참고하십시오.
+
+[전역변수/변수 파일](https://hrbook-hrc.web.app/#/view/doc-hi6-operation/korean-tp630/6-monitoring/3-job/3-global-variable/3-var-files)
+
+전역 최상위(root) 배열은 값이 바뀔 때마다 즉각적으로 .csv 파일에 저장되지는 않습니다.
+`Ctrl+[F7: save]`를 누르거나 전원을 끌 때에 파일로 저장되는데, `save_csv` 명령문을 수행하면 즉각 파일로 저장할 수 있습니다.
+
+- 용량이 큰 .csv들이 저장될 수 있기 때문에, 저장에 의한 택트 타임 손실이 없도록 백그라운드에서 비동기적으로 수행됩니다. 저장이 성공적으로 완료 되었는지는 결과변수의 값을 읽어 확인 할 수 있습니다.
+- 저장이 끝나기 전에는 또 다른 저장을 요청할 수 없습니다.
+
+
+### 문법
+
+```python
+save_csv <결과변수>,"*"
+save_csv <결과변수>,"<변수명>"
+```
+
+### 파라미터
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align:left">항목</th>
+      <th style="text-align:left">의미</th>
+      <th style="text-align:left">기타</th>
+    </tr>
+  </thead>
+  <tbody>
+  <tr>
+      <td style="text-align:left">결과변수</td>
+      <td style="text-align:left">
+        백그라운드 수행 결과<br>
+        <ul>
+        <li>1: 완료됨.</li>
+        <li>0: 저장 진행 중.</li>
+        </ul>
+      </td>
+      <td style="text-align:left">변수</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">.csv 파일이름</td>
+      <td style="text-align:left">
+        <ul>
+        <li>"*": 모든 최상위 배열 변수 저장.</li>
+        <li>"<변수명>": 지정한 변수를 .csv 파일로 저장.</li>
+        </ul>
+      </td>
+      <td style="text-align:left">문자열식</td>
+    </tr>
+  </tbody>
+</table>
+
+{% hint style="warning" %}
+"*"을 지정하여 모든 .csv를 저장하는 경우, 대응하는 이름의 최상위 변수가 존재하지 않는다고 해서, vars/ 폴더에 있던 .csv 파일을 삭제하지는 않습니다.
+{% endhint %}
+
+### 사용 예
+
+```python
+     var res
+     save_csv res,"locs"
+     wait res==1,4,*timeout
+     copyfile res,"project/vars/locs.csv","work/arrs/locs2.csv"
+     wait res==1,4,*timeout
+     call 5
+     end
+     *timeout
+     print "failed to save new locations."
      end
 ```
 # 10. 기타
