@@ -58,6 +58,88 @@
       <td style="text-align:left">result()</td>
       <td style="text-align:left"></td>
     </tr>
+   <tr>
+      <td style="text-align:left">mkshift(3,ref_po,mea_po,2.0) <br>
+      mkshift(5,ref_po,mea_sft)
+      </td>
+      <td style="text-align:left">The optimized shift value is calculated and returned from the measured pose or shift data corresponding to multiple reference poses. <br>
+      If the 4th parameter corresponding to tolerance is specified to be greater than 0 and the calculated shift value is greater than this value, it stops with an error. <br>
+      # Note <br>
+      ref_po (reference pose) and mea_po (measured pose) are the array types of pose variables, and mea_sft (measured shift) is the type of array of shift variables. <br>
+      If there is no 4th parameter corresponding to tolerance, no error is detected. <br>
+      We currently support up to 100 positions.
+      </td>
+      <td style="text-align:left">sft1=mkshift(4,ref_po,mea_po,3.0)</td>
+      <td style="text-align:left">Shift</td>
+    </tr> 
+    <tr>
+      <td style="text-align:left">calshift(po1,po2) <br>
+      calshift(po1,po2,"TV")
+      </td>
+      <td style="text-align:left">Returns the difference between two poses as a shift value. <br>
+      If the "TV" parameter is present, the vertical orientation of the tool is returned as a shift value.
+      </td>
+      <td style="text-align:left">sft1=calshift(po1,po2)</td>
+      <td style="text-align:left">Shift</td>
+    </tr> 
+    <tr>
+      <td style="text-align:left">po.valid()
+      </td>
+      <td style="text-align:left">
+        Returns information about the pose object whether it is within the robot's motion range. <br>
+        # Example <br>
+        if po1.valid()==0 <br>
+            stop # Robot stop<br>
+        endif <br>        
+      </td>
+      <td style="text-align:left">var ret=po1.valid()
+      </td>
+      <td style="text-align:left">0:Outside the operating range <br>
+      1:Within operating range
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align:left">po.str_array()
+      </td>
+      <td style="text-align:left">
+        Returns information about the pose object as a string in array format. <br>
+        # Example <br>
+        var msg=cpo().str_array() <br>
+        print msg # [1850.000,2010.500,0.000,0.000,-90.000,0.000,"base"]
+      </td>
+      <td style="text-align:left">msg=po1.str_array()
+      </td>
+      <td style="text-align:left">String</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">sft.str_array()
+      </td>
+      <td style="text-align:left">
+        Returns information about the shift object as a string in array format. <br>
+        # Example <br>
+        var sft1=Shift(0.000,0.000,30.000,0.000,0.000,0.000,"base") <br>
+        var msg=sft1.str_array() <br>
+        print msg # [0.000,0.000,30.000,0.000,0.000,0.000,"base"]
+      </td>
+      <td style="text-align:left">msg=sft1.str_array()
+      </td>
+      <td style="text-align:left">String</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">upo(crd)
+      </td>
+      <td style="text-align:left">
+        <p>When executing the move ~ until statement, the current pose when the until condition is satisfied is returned in the crd coordinate system.</p>
+        <p>For values that can be used as "crd" elements, see the table
+          under "<a href="../../5-moving-robot/1-pose.md">5.1 Pose</a>".</p>
+         <p>The "crd" parameter may be omitted,
+          and the default value is "base" respectively.</p>
+      </td>
+      <td style="text-align:left">upo(&quot;joint&quot;)
+      </td>
+      <td style="text-align:left">Pose*</td>
+    </tr>
+
   </tbody>
 </table>
 
