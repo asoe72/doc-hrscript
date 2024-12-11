@@ -24,19 +24,19 @@
 		</tr>
 		<tr>
 			<td>asin(a)</td>
-			<td>a의 arc sige 값을 radian 형식으로 리턴합니다.</td>
+			<td>a의 arc sine 값을 radian 형식으로 리턴합니다.</td>
 			<td>asin(0.5)</td>
 			<td>0.5236</td>
 		</tr>
 		<tr>
 			<td>atan(a)</td>
-			<td>a의 arctangent 값을 radian 형식으로 리턴합니다.</td>
+			<td>a의 arc tangent 값을 radian 형식으로 리턴합니다.</td>
 			<td>atan(0.5)</td>
 			<td>0.4636</td>
 		</tr>
 		<tr>
 			<td>atan2(a, b)</td>
-			<td>y길이가 a, x길이가 b인 삼각형의 arctangent 값을 radian 형식으로 리턴합니다.</td>
+			<td>y길이가 a, x길이가 b인 삼각형의 arc tangent 값을 radian 형식으로 리턴합니다.</td>
 			<td>atan2(2,1)</td>
 				<td>1.1071</td>
 		</tr>
