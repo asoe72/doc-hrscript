@@ -1,4 +1,4 @@
-# 2.9.1 Math Functions
+﻿# 2.9.1 Math Functions
 
 <table style="text-align:left">
   <thead>
@@ -31,13 +31,13 @@
     </tr>
     <tr>
       <td>atan(<b>a</b>)</td>
-      <td>Returns the arctangent value of <b>a</b> in radian format</td>
+      <td>Returns the arc tangent value of <b>a</b> in radian format</td>
       <td>atan(0.5)</td>
       <td>0.4636</td>
     </tr>
     <tr>
       <td>atan2(<b>a</b>, <b>b</b>)</td>
-      <td>Returns the arctangent value of a triangle with <b>a</b> for the y length
+      <td>Returns the arc tangent value of a triangle with <b>a</b> for the y length
         and <b>b</b> for the x length in radian format</td>
       <td>atan2(2,1)</td>
       <td>1.1071</td>
