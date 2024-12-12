@@ -22,7 +22,10 @@ global x가 처음 수행되면 변수 x가 생성되면서 default값 0으로 �
         <p>global x
           <br />
         </p>
-        <p>x=x+1
+        <p># x=2의 경우
+          <br />
+        </p>
+        <p>x=x+1 # 3
           <br />
         </p>
         <p>call 107
@@ -45,7 +48,7 @@ global x가 처음 수행되면 변수 x가 생성되면서 default값 0으로 �
         <p>print x, y # 3, 10
           <br />
         </p>
-        <p>x=x+1
+        <p>x=x+1 # 4
           <br />
         </p>
         <p>end
