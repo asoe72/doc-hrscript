@@ -20,10 +20,10 @@ end
 ```python
 # 0105_dist2d.job
 # Calc. Euclide distance 2D
-param x,y
+param dx,dy
 var tmp
 
-tmp=x*x+y*y
+tmp=dx*dx+dy*dy
 var len=sqr(tmp) # distance from origin
 return len
 ```
@@ -35,7 +35,7 @@ return len
 ```
 <br>
 
-1번 JOB에서 이 dist2d 서브 프로그램을 call 문으로 호출하고 있으며, 지역변수인 x, y를 전달하고 있습니다. dist2d  서브 프로그램 내에서 param문으로 정의한 ldX, ldY를 형식 매개변수\(formal parameter\)라고 하며, call 문에 전달한 x, y를 실 매개변수\(actual parameter\)라고 합니다.
+1번 JOB에서 이 dist2d 서브 프로그램을 call 문으로 호출하고 있으며, 지역변수인 x, y를 전달하고 있습니다. dist2d  서브 프로그램 내에서 param문으로 정의한 dx, dy를 형식 매개변수\(formal parameter\)라고 하며, call 문에 전달한 x, y를 실 매개변수\(actual parameter\)라고 합니다.
 
 dist2d 프로그램은 결과값을 return 문을 통해 외부로 전달하고 있습니다. 이 return값은 호출한 프로그램에서 result\(\) 함수를 호출하여 얻을 수 있습니다.
 
