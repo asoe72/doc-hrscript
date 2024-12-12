@@ -24,7 +24,10 @@ If a global x is executed first, a variable x will be created, and the value wil
         <p>global x
           <br />
         </p>
-        <p>x=x+1
+        <p> in the case x=2
+          <br />
+        </p>        
+        <p>x=x+1 # 3
           <br />
         </p>
         <p>call 107
@@ -47,7 +50,7 @@ If a global x is executed first, a variable x will be created, and the value wil
         <p>print x, y # 3, 10
           <br />
         </p>
-        <p>x=x+1
+        <p>x=x+1 # 4
           <br />
         </p>
         <p>end
