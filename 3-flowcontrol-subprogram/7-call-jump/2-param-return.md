@@ -18,7 +18,7 @@ end
 ```python
 # 0105_dist2d.job
 # Calc. Euclide distance 2D
-param x,y
+param dx,dy
 var tmp
 
 tmp=x*x+y*y
@@ -33,7 +33,7 @@ RESULT
 13.742
 ```
 
-In job no. 1, the dist2d subprogram is called with the **call** statement, and "x, y," which are local variables, are passed. In the dist2d subprogram, "ldX", and "ldY" defined with the **param** statement are called "formal parameters", and "x, y" passed to the **call** statement are called "actual parameters."
+In job no. 1, the dist2d subprogram is called with the **call** statement, and "x, y," which are local variables, are passed. In the dist2d subprogram, "dx", and "dy" defined with the **param** statement are called "formal parameters", and "x, y" passed to the **call** statement are called "actual parameters."
 
 The dist2d program transports resulting values to external destinations through **return** statements. Returned values can be obtained by calling a result\(\) function in the called program.
 
