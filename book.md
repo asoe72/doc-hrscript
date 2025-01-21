@@ -515,13 +515,13 @@ The list of functions provided in HRScript is as follows. \(The tables are sorte
     </tr>
     <tr>
       <td>atan(<b>a</b>)</td>
-      <td>Returns the arctangent value of <b>a</b> in radian format</td>
+      <td>Returns the arc tangent value of <b>a</b> in radian format</td>
       <td>atan(0.5)</td>
       <td>0.4636</td>
     </tr>
     <tr>
       <td>atan2(<b>a</b>, <b>b</b>)</td>
-      <td>Returns the arctangent value of a triangle with <b>a</b> for the y length
+      <td>Returns the arc tangent value of a triangle with <b>a</b> for the y length
         and <b>b</b> for the x length in radian format</td>
       <td>atan2(2,1)</td>
       <td>1.1071</td>
@@ -994,6 +994,88 @@ These functions receive an input of a parameter and then create and return an ob
       <td style="text-align:left">result()</td>
       <td style="text-align:left"></td>
     </tr>
+   <tr>
+      <td style="text-align:left">mkshift(3,ref_po,mea_po,2.0) <br>
+      mkshift(5,ref_po,mea_sft)
+      </td>
+      <td style="text-align:left">The optimized shift value is calculated and returned from the measured pose or shift data corresponding to multiple reference poses. <br>
+      If the 4th parameter corresponding to tolerance is specified to be greater than 0 and the calculated shift value is greater than this value, it stops with an error. <br>
+      # Note <br>
+      ref_po (reference pose) and mea_po (measured pose) are the array types of pose variables, and mea_sft (measured shift) is the type of array of shift variables. <br>
+      If there is no 4th parameter corresponding to tolerance, no error is detected. <br>
+      We currently support up to 100 positions.
+      </td>
+      <td style="text-align:left">sft1=mkshift(4,ref_po,mea_po,3.0)</td>
+      <td style="text-align:left">Shift</td>
+    </tr> 
+    <tr>
+      <td style="text-align:left">calshift(po1,po2) <br>
+      calshift(po1,po2,"TV")
+      </td>
+      <td style="text-align:left">Returns the difference between two poses as a shift value. <br>
+      If the "TV" parameter is present, the vertical orientation of the tool is returned as a shift value.
+      </td>
+      <td style="text-align:left">sft1=calshift(po1,po2)</td>
+      <td style="text-align:left">Shift</td>
+    </tr> 
+    <tr>
+      <td style="text-align:left">po.valid()
+      </td>
+      <td style="text-align:left">
+        Returns information about the pose object whether it is within the robot's motion range. <br>
+        # Example <br>
+        if po1.valid()==0 <br>
+            stop # Robot stop<br>
+        endif <br>        
+      </td>
+      <td style="text-align:left">var ret=po1.valid()
+      </td>
+      <td style="text-align:left">0:Outside the operating range <br>
+      1:Within operating range
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align:left">po.str_array()
+      </td>
+      <td style="text-align:left">
+        Returns information about the pose object as a string in array format. <br>
+        # Example <br>
+        var msg=cpo().str_array() <br>
+        print msg # [1850.000,2010.500,0.000,0.000,-90.000,0.000,"base"]
+      </td>
+      <td style="text-align:left">msg=po1.str_array()
+      </td>
+      <td style="text-align:left">String</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">sft.str_array()
+      </td>
+      <td style="text-align:left">
+        Returns information about the shift object as a string in array format. <br>
+        # Example <br>
+        var sft1=Shift(0.000,0.000,30.000,0.000,0.000,0.000,"base") <br>
+        var msg=sft1.str_array() <br>
+        print msg # [0.000,0.000,30.000,0.000,0.000,0.000,"base"]
+      </td>
+      <td style="text-align:left">msg=sft1.str_array()
+      </td>
+      <td style="text-align:left">String</td>
+    </tr>
+    <tr>
+      <td style="text-align:left">upo(crd)
+      </td>
+      <td style="text-align:left">
+        <p>When executing the move ~ until statement, the current pose when the until condition is satisfied is returned in the crd coordinate system.</p>
+        <p>For values that can be used as "crd" elements, see the table
+          under "<a href="../../5-moving-robot/1-pose.md">5.1 Pose</a>".</p>
+         <p>The "crd" parameter may be omitted,
+          and the default value is "base" respectively.</p>
+      </td>
+      <td style="text-align:left">upo(&quot;joint&quot;)
+      </td>
+      <td style="text-align:left">Pose*</td>
+    </tr>
+
   </tbody>
 </table>
 
@@ -1785,7 +1867,7 @@ end
 ```python
 # 0105_dist2d.job
 # Calc. Euclide distance 2D
-param x,y
+param dx,dy
 var tmp
 
 tmp=x*x+y*y
@@ -1800,7 +1882,7 @@ RESULT
 13.742
 ```
 
-In job no. 1, the dist2d subprogram is called with the **call** statement, and "x, y," which are local variables, are passed. In the dist2d subprogram, "ldX", and "ldY" defined with the **param** statement are called "formal parameters", and "x, y" passed to the **call** statement are called "actual parameters."
+In job no. 1, the dist2d subprogram is called with the **call** statement, and "x, y," which are local variables, are passed. In the dist2d subprogram, "dx", and "dy" defined with the **param** statement are called "formal parameters", and "x, y" passed to the **call** statement are called "actual parameters."
 
 The dist2d program transports resulting values to external destinations through **return** statements. Returned values can be obtained by calling a result\(\) function in the called program.
 
@@ -2025,7 +2107,10 @@ If a global x is executed first, a variable x will be created, and the value wil
         <p>global x
           <br />
         </p>
-        <p>x=x+1
+        <p> in the case x=2
+          <br />
+        </p>        
+        <p>x=x+1 # 3
           <br />
         </p>
         <p>call 107
@@ -2048,7 +2133,7 @@ If a global x is executed first, a variable x will be created, and the value wil
         <p>print x, y # 3, 10
           <br />
         </p>
-        <p>x=x+1
+        <p>x=x+1 # 4
           <br />
         </p>
         <p>end
@@ -3549,7 +3634,7 @@ S2   move P,spd=250mm/sec,accu=0,tool=0
      onl_trj.look_ahead_time=1.0
      onl_trj.interval=0.1
      onl_trj.init
-     onl_trj.exe desired_pose
+     onl_trj.buf_in desired_pose
  
 ```
 
@@ -3558,7 +3643,7 @@ S2   move P,spd=250mm/sec,accu=0,tool=0
 * look_head_time : time delay for robot moving (unit : [s])  
 * interval : time interval between commands (unit : [s])  
 * init : online trajectory operation init  
-* exe  : user should set the pose data in joint space coordinate  
+* buf_in  : user should set the pose data or string data (ex. [0.000,90.000,0.000,0.000,-90.000,0.000]) in joint space coordinate
 
 
 
@@ -3583,11 +3668,10 @@ S2   move P,spd=250mm/sec,accu=0,tool=0
      onl_trj.interval=0.1
      onl_trj.init
 
-     var desired_pose
-     var msg
-10   enet0.recv msg
-     desired_pose=Pose(msg)
-     onl_trj.exe desired_pose
+     var str_pose
+10   enet0.recv
+     str_pose=result()
+     onl_trj.buf_in str_pose
      goto 10
      end 
 ```
@@ -6460,7 +6544,6 @@ triggout <output variable>,val=<output value>,dist=<ahead/behind distance>,j=<tc
     <tr>
       <td style="text-align:left">output value</td>
       <td style="text-align:left">
-        arithmetic expression,<br>
         When it is bit output(do, so), 0 is off, not 0 is on
       </td>
       <td style="text-align:left">arithmetic expression</td>
@@ -6484,8 +6567,7 @@ triggout <output variable>,val=<output value>,dist=<ahead/behind distance>,j=<tc
     <tr>
       <td style="text-align:left">Absolute position in x, y, z direction</td>
       <td style="text-align:left">
-        -3000 ~ 3000 [mm]<br>
-        If it is (-), the signal is output before the target position is reached; if it is (+), it is output after it is reached.
+        -3000 ~ 3000 [mm]
       </td>
       <td style="text-align:left">arithmetic expression</td>
     </tr>

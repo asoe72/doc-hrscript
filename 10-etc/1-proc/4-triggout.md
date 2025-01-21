@@ -42,7 +42,6 @@ triggout <output variable>,val=<output value>,dist=<ahead/behind distance>,j=<tc
     <tr>
       <td style="text-align:left">output value</td>
       <td style="text-align:left">
-        arithmetic expression,<br>
         When it is bit output(do, so), 0 is off, not 0 is on
       </td>
       <td style="text-align:left">arithmetic expression</td>
@@ -66,8 +65,7 @@ triggout <output variable>,val=<output value>,dist=<ahead/behind distance>,j=<tc
     <tr>
       <td style="text-align:left">Absolute position in x, y, z direction</td>
       <td style="text-align:left">
-        -3000 ~ 3000 [mm]<br>
-        If it is (-), the signal is output before the target position is reached; if it is (+), it is output after it is reached.
+        -3000 ~ 3000 [mm]
       </td>
       <td style="text-align:left">arithmetic expression</td>
     </tr>
