@@ -42,7 +42,6 @@ triggout <출력변수>,val=<출력값>,dist=<선출/후출 거리>,j=<tcp 또�
     <tr>
       <td style="text-align:left">출력값</td>
       <td style="text-align:left">
-        산술식,<br>
         단일신호 출력(do, so)의 경우 0이면 off, 0이 아니면 on
       </td>
       <td style="text-align:left">산술식</td>
@@ -66,8 +65,7 @@ triggout <출력변수>,val=<출력값>,dist=<선출/후출 거리>,j=<tcp 또�
     <tr>
       <td style="text-align:left">x, y, z방향 절대위치</td>
       <td style="text-align:left">
-        -3000 ~ 3000 [mm]<br>
-        (-)인 경우 목표위치 도달 전 신호가 출력되며 (+)인 경우 도달 후 출력됩니다.
+        -3000 ~ 3000 [mm]
       </td>
       <td style="text-align:left">산술식</td>
     </tr>
